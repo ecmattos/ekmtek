@@ -9,7 +9,7 @@ use App\Http\Requests;
 use App\Api\V1\Requests\ClientRequest;
 use App\Repositories\ClientRepository;
 
-use App\Mail\ClientsNewMail;
+use App\Mail\ClientNewMail;
 use Mail;
 
 /**
