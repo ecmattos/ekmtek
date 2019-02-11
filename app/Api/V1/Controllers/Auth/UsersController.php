@@ -34,7 +34,7 @@ class UsersController extends Controller
         $code_verification = $data['codeVerification'];
 
         try {
-            $check = $this->clientRepository->findWhere(['code_verification'=>$code_verification])->first();
+            $check = $this->clientRepository->findWhere(['code_verification' => $code_verification])->first();
             $bag = new MessageBag();
                         
             if(!is_null($check))

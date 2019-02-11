@@ -38,7 +38,7 @@ return [
     ],
 
     // these options are related to the password recovery procedure
-    'recovery' => [
+    'password_recovery' => [
 
         // here you can specify some validation rules for your password recovery procedure
         'validation_rules' => [
@@ -47,17 +47,17 @@ return [
     ],
 
     // these options are related to the password recovery procedure
-    'reset_password' => [
+    'password_reset' => [
 
         // this option must be set to true if you want to release a token
         // when your user successfully terminates the password reset procedure
-        'release_token' => env('PASSWORD_RESET_RELEASE_TOKEN', false),
+        //'release_token' => env('PASSWORD_RESET_RELEASE_TOKEN', false),
 
         // here you can specify some validation rules for your password recovery procedure
         'validation_rules' => [
-            'token' => 'required',
-            'email' => 'required|email',
-            'password' => 'required|confirmed'
+            'codeVerification' => 'required',
+            'password' => 'min:6|required|required_with:passwordRepeat|same:passwordRepeat',
+            'passwordRepeat' => 'min:6|required'
         ]
     ]
 

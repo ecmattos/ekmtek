@@ -2,25 +2,21 @@
     {{-- Header --}}
     @slot('header')
         @component('mail::header', ['url' => config('app.url')])
-            {{ config('app.name') }}  - Confirmação de cadastro 
+            {{ config('app.name') }}  - Recuperação da Senha de Acesso 
         @endcomponent
     @endslot
 
     {{-- Body --}}
     
-    Olá, {{ $client->name }} !
+    Olá, {{ $user->name }} !
 
-    Obrigado por registrar-se conosco.
+    Recebemos a sua solicitação de recuperação de Senha de Acesso.
     
-    Estamos enviando o código de verificação abaixo para que você possa concluir o seu cadastro.
+    Segue abaixo o código de verificação para fins criar um novo acesso:
     
-    Código de verificação: {{ $client->code_verification }}
+    Código de verificação: {{ $user->code_verification }}
     
     Caso você não tenha solicitado, favor desconsiderar este e-mail.
-
-    @component('mail::button', ['url' => ''])
-    Button Text
-    @endcomponent
     
     Atenciosamente,
 

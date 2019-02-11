@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Mail;
+namespace App\Mail\Auth;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class ClientNewMail extends Mailable
+class PasswordRecoveryMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -17,12 +17,12 @@ class ClientNewMail extends Mailable
      * @return void
      */
     public $subject;
-    public $client;
+    public $user;
 
-    public function __construct($subject, $client)
+    public function __construct($subject, $user)
     {
         $this->subject = $subject;
-        $this->client = $client;
+        $this->user = $user;
     }
 
     /**
@@ -32,6 +32,6 @@ class ClientNewMail extends Mailable
      */
     public function build()
     {
-        return $this->markdown('emails.clients.new');
+        return $this->markdown('emails.auth.passwordRecovery');
     }
 }
