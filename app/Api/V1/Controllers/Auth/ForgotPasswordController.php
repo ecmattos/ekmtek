@@ -12,6 +12,7 @@ use App\Repositories\UserRepository;
 use App\Mail\Auth\PasswordRecoveryMail;
 use Illuminate\Support\MessageBag;
 use Mail;
+use DB;
 
 class ForgotPasswordController extends Controller
 {
@@ -34,14 +35,14 @@ class ForgotPasswordController extends Controller
     public function recovery(PasswordRecoveryRequest $request)
     {
         $data = $request->all();
-
         $user = $this->userRepository->findWhere(['email' => $data['email']])->first();
-            
+        $user_id = $user->id;
+
         if(!$user) {
             //throw new HttpException(500);
             $bag = new MessageBag();
             $bag->add('email', 'Inexistente.');
-            
+                        
             return response()->json([
                 'error' => [
                     'message' => '422 Unprocessable Entity',
@@ -51,17 +52,18 @@ class ForgotPasswordController extends Controller
             ], 422);
         }
 
-        #$code_verification = str_random(20);
-        #$this->userRepository->update(['code_verification' => $code_verification], $user->id);
-
+        $code_verification = str_random(20);
+        $this->userRepository->update(['code_verification' => $code_verification], $user->id);
+                    
+        $user = $this->userRepository->find($user_id);
+                    
         $subject = config('app.name') . " - Recuperação da Senha de Acesso";
         Mail::to($user->email)
             ->send(new PasswordRecoveryMail($subject, $user));
-        
+                    
         return response()->json([
             'status' => 'ok'
         ], 201);
-        
     }
 
     public function reset(PasswordResetRequest $request)
