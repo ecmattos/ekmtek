@@ -14,8 +14,8 @@ $api->version('v1', function (Router $api) {
         $api->group(['prefix' => 'auth'], function(Router $api) {
             $api->post('users/admin', 'App\\Api\\V1\\Controllers\\Auth\\UsersController@admin_store')->name('users.admin_store');
             $api->post('login', 'App\\Api\\V1\\Controllers\\Auth\\LoginController@login')->name('auth.login');
-            $api->post('recovery', 'App\\Api\\V1\\Controllers\\Auth\\ForgotPasswordController@recovery')->name('auth.password_recovery');
-            $api->post('reset', 'App\\Api\\V1\\Controllers\\Auth\\ForgotPasswordController@reset')->name('auth.password_reset');
+            $api->post('recovery', 'App\\Api\\V1\\Controllers\\Auth\\PasswordController@recovery')->name('auth.password_recovery');
+            $api->post('reset', 'App\\Api\\V1\\Controllers\\Auth\\PasswordController@reset')->name('auth.password_reset');
 
             $api->post('logout', 'App\\Api\\V1\\Controllers\\Auth\\LogoutController@logout')->name('auth.logout');
             $api->post('refresh', 'App\\Api\\V1\\Controllers\\Auth\\RefreshController@refresh');

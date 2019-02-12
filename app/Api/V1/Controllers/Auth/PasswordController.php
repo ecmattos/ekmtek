@@ -14,7 +14,7 @@ use Illuminate\Support\MessageBag;
 use Mail;
 use DB;
 
-class ForgotPasswordController extends Controller
+class PasswordController extends Controller
 {
     /**
      * @var UserRepository
@@ -36,8 +36,7 @@ class ForgotPasswordController extends Controller
     {
         $data = $request->all();
         $user = $this->userRepository->findWhere(['email' => $data['email']])->first();
-        $user_id = $user->id;
-
+        
         if(!$user) {
             //throw new HttpException(500);
             $bag = new MessageBag();
@@ -51,6 +50,8 @@ class ForgotPasswordController extends Controller
                 ]
             ], 422);
         }
+
+        $user_id = $user->id;
 
         $code_verification = str_random(20);
         $this->userRepository->update(['code_verification' => $code_verification], $user->id);
