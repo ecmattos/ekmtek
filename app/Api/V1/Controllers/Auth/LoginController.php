@@ -54,7 +54,7 @@ class LoginController extends Controller
                 'token' => $token,
                 'user' => $user,
                 'client_name' => $user->client->name,
-                'expires_in' => Auth::guard()->factory()->getTTL() * 60
+                'expires_in' => Auth::guard()->factory()->getTTL() * env('JWT_TTL')
             ]);
     }
 }

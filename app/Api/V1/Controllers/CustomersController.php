@@ -2,35 +2,44 @@
 
 namespace App\Api\V1\Controllers;
 
-use Tymon\JWTAuth\JWTAuth;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+
 use App\Http\Requests;
-use App\Api\V1\Requests\ClientRequest;
-use App\Repositories\ClientRepository;
-use App\Mail\ClientNewMail;
-use Mail;
+use Prettus\Validator\Contracts\ValidatorInterface;
+use Prettus\Validator\Exceptions\ValidatorException;
+use App\Http\Controllers\Controller;
+use App\Api\V1\Requests\CustomerRequest;
+
+use App\Repositories\CustomerRepository;
+use App\Validators\CustomerValidator;
 
 /**
- * Class ClientsController.
+ * Class CustomersController.
  *
  * @package namespace App\Api\V1\Controllers;
  */
-class ClientsController extends Controller
+class CustomersController extends Controller
 {
     /**
-     * @var ClientRepository
+     * @var CustomerRepository
      */
-    protected $clientRepository;
+    protected $repository;
 
     /**
-     * ClientsController constructor.
-     *
-     * @param ClientRepository $clientRepository
+     * @var CustomerValidator
      */
-    public function __construct(ClientRepository $clientRepository)
+    protected $validator;
+
+    /**
+     * CustomersController constructor.
+     *
+     * @param CustomerRepository $repository
+     * @param CustomerValidator $validator
+     */
+    public function __construct(CustomerRepository $repository, CustomerValidator $validator)
     {
-        $this->clientRepository = $clientRepository;
+        $this->repository = $repository;
+        $this->validator  = $validator;
     }
 
     /**
@@ -41,75 +50,37 @@ class ClientsController extends Controller
     public function index()
     {
         $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
-        $clients = $this->repository->all();
+        $customers = $this->repository->all();
 
         if (request()->wantsJson()) {
 
             return response()->json([
-                'data' => $clients,
+                'data' => $customers,
             ]);
         }
 
-        return view('clients.index', compact('clients'));
+        #return view('customers.index', compact('customers'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  ClientCreateRequest $request
+     * @param  CustomerRequest $request
      *
-     * @return \Illuminate\Http\Response
-     *
-     * @throws \Prettus\Validator\Exceptions\ValidatorException
      */
-    public function store(ClientRequest $request, JWTAuth $JWTAuth)
+    public function store(CustomerRequest $request)
     {
         $data = $request->all();
         
-        $data['code'] = $this->generateCode();
-        $data['domain'] = env("DOMAIN");
-        $data['database'] = env('DB_DATABASE')."_".$data['code'];
-        $data['hostname'] = env('DB_HOST');
-        $data['username'] = env('DB_USERNAME');
-        $data['password'] = env('DB_PASSWORD');
-        $data['code_verification'] =  str_random(20);
+        $customer = $this->repository->create($data);
 
-        $code_verification = $data['code_verification'];
-
-        #dd($data);
-                       
-        $client = $this->clientRepository->create($data);
-            
         if(!$client) {
             throw new HttpException(500);
         }
 
-        $subject = config('app.name') . " - Confirmação do Cadastro";
-        Mail::to($client->email)
-            ->send(new ClientNewMail($subject, $client));
-        
         return response()->json([
             'status' => 'ok'
         ], 201);
-        
-    }
-
-    public function generateCode()
-	{
-        $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-
-        $charsLength = strlen($chars);
-        
-        $size = 10;
-
-        $codeRandomString = '';
-        
-        for($i = 0; $i < $size; $i++)
-        {
-           $codeRandomString .= $chars[rand(0, $charsLength - 1)];
-		}
-        
-        return $codeRandomString;
     }
 
     /**
@@ -121,16 +92,16 @@ class ClientsController extends Controller
      */
     public function show($id)
     {
-        $client = $this->repository->find($id);
+        $customer = $this->repository->find($id);
 
         if (request()->wantsJson()) {
 
             return response()->json([
-                'data' => $client,
+                'data' => $customer,
             ]);
         }
 
-        return view('clients.show', compact('client'));
+        return view('customers.show', compact('customer'));
     }
 
     /**
@@ -142,32 +113,32 @@ class ClientsController extends Controller
      */
     public function edit($id)
     {
-        $client = $this->repository->find($id);
+        $customer = $this->repository->find($id);
 
-        return view('clients.edit', compact('client'));
+        return view('customers.edit', compact('customer'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  ClientUpdateRequest $request
+     * @param  CustomerUpdateRequest $request
      * @param  string            $id
      *
      * @return Response
      *
      * @throws \Prettus\Validator\Exceptions\ValidatorException
      */
-    public function update(ClientUpdateRequest $request, $id)
+    public function update(CustomerUpdateRequest $request, $id)
     {
         try {
 
             $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_UPDATE);
 
-            $client = $this->repository->update($request->all(), $id);
+            $customer = $this->repository->update($request->all(), $id);
 
             $response = [
-                'message' => 'Client updated.',
-                'data'    => $client->toArray(),
+                'message' => 'Customer updated.',
+                'data'    => $customer->toArray(),
             ];
 
             if ($request->wantsJson()) {
@@ -205,11 +176,11 @@ class ClientsController extends Controller
         if (request()->wantsJson()) {
 
             return response()->json([
-                'message' => 'Client deleted.',
+                'message' => 'Customer deleted.',
                 'deleted' => $deleted,
             ]);
         }
 
-        return redirect()->back()->with('message', 'Client deleted.');
+        return redirect()->back()->with('message', 'Customer deleted.');
     }
 }

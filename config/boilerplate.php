@@ -59,6 +59,17 @@ return [
             'password' => 'min:6|required|required_with:passwordRepeat|same:passwordRepeat',
             'passwordRepeat' => 'min:6|required'
         ]
-    ]
+    ],
+
+    'customers' => [
+        'validation_rules' => [
+            'cpfcnpj' => 'cnpj_cpf|required|numeric|unique:customers,cpfcnpj',
+            'name' => 'max:100|required|unique:customers,name',
+            'email' => 'max:100|required|email|unique:customers,email',
+            'address' => 'required',
+            'phone' => 'telefone',
+            'mobile' => 'celular'
+        ]
+    ],
 
 ];
